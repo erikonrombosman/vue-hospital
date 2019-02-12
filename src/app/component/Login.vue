@@ -1,0 +1,46 @@
+<template>
+  <div class="container p-4">
+    <div class="row">
+      <div class="col-md-4 mx-auto">
+        <div class="car text-center">
+          <div class="card-header">
+            <h3>SignIn</h3>
+          </div>
+          <div class="card-body">
+            <img
+              src="/rombos.jpg"
+              alt="Rombosman"
+              class="card-img-top mx-auto m-2 rounded-circle w-50"
+            >
+
+            <div class="form-group">
+              <input type="text" name="username" placeholder="Username" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="password" name="password" placeholder="Password" class="form-control">
+            </div>
+            <div class="form-group">
+              <button class="btn btn-success btn-block">SingIn</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      username: "",
+      password: ""
+    };
+  },
+  methods: {
+    login() {
+      this.$http.post;
+    }
+  }
+};
+</script>
