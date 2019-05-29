@@ -26,7 +26,15 @@ passport.use(new LocalStrategy(
   }
 ));
 router.post('/login',passport.authenticate('local'), function(req, res){
-  res.status(200).send({user: req.user})
+  if(req.user){
+    if(req.user.bool_activo){
+      res.status(200).send({user: req.user})
+    }else{
+      res.staus(500).json({msg:"El usuario se encuentra bloqueado"})
+    }
+  }else{
+    res.staus(500).json({msg:"Usuario o contraseña incorrectos"})
+  }
 });
 
 router.post("/signUp", (req, res)=>{

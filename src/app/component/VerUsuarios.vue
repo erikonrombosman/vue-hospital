@@ -27,21 +27,17 @@
         <td class="text">{{ props.item.estado }}</td>
         <td class="text">{{ props.item.user_type }}</td>
         <td class="justify-center">
-          <v-icon
-            small
-            class="mr-2"
-            @click="bloquearUsuario(props.item)"
-            v-if="props.item.bool_activo"
-          >
-            highlight_off
-          </v-icon>
-          <v-icon
-            small
-            v-if="!props.item.bool_activo"
-            @click="desbloquearUsuario(props.item)"
-          >
-            done_outline
-          </v-icon>
+          <v-btn dark small color="red"
+             v-if="props.item.bool_activo" 
+             @click="bloquearUsuario(props.item)">
+            <v-icon>highlight_off</v-icon> 
+          </v-btn>
+          <v-btn dark small color="green" v-if="!props.item.bool_activo"  @click="desbloquearUsuario(props.item)">
+            <v-icon>done_outline</v-icon>
+          </v-btn>
+          <!--<v-btn dark small color="blue"   @click="desbloquearUsuario(props.item)">
+            <v-icon>done_outline</v-icon>
+          </v-btn>-->
         </td>
       </template>
     </v-data-table>
@@ -52,6 +48,7 @@
 
 <script>
   import moment from 'moment'
+  import swal from 'sweetalert';
   moment.locale("es");
   const { validate, clean, format } = require('rut.js')
   export default {
@@ -70,7 +67,7 @@
         { text: 'Nombre', value: 'fullname' },
         { text: 'Estado', value: 'estado' },
         { text: 'Tipo de Usuario', value: 'user_type' },
-        { text: 'Acciones', value: 'rut', sortable: false }
+        { text: 'Acciones', value: 'rut', sortable: false, width:"300px" }
       ],
     }),
 
@@ -116,9 +113,11 @@
         console.log(user, "bloquear")
         this.$http.put(`/pg/bloquearUser/${user.rut}`)
         .then(res=>{
+          swal("Éxito!", "Se ha bloqueado el usuario!", "success");
           this.getUsuarios();
         })
         .catch(err=>{
+          swal("Error!", "No se ha podido desbloquear el usuario!", "error");
           console.log(err)
         })
       },
@@ -128,8 +127,10 @@
         this.$http.put(`/pg/desbloquearUser/${user.rut}`)
         .then(res=>{
           this.getUsuarios();
+          swal("Éxito!", "Se ha desbloqueado el usuario!", "success");
         })
         .catch(err=>{
+          swal("Error!", "No se ha podido desbloquear el usuario!", "error");
           console.log(err)
         })
       },

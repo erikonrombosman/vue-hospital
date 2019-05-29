@@ -2,14 +2,12 @@ import Vue from 'vue'
 import App from './component/App.vue'
 
 import VueRouter from 'vue-router'
-import Landing from './component/Landing.vue'
 import Profile from './component/Profile.vue'
 import Login from './component/Login.vue'
 import VerPacientes from "./component/VerPacientes.vue"
 import VerUsuarios from "./component/VerUsuarios.vue"
 import AgregarUsuario from "./component/AgregarUsuario.vue"
 import VueResource from 'vue-resource';
-import SignUp from './component/SignUp.vue'
 //import ToggleButton from 'vue-js-toggle-button'
 import Bootstrap from 'bootstrap-vue'
 import Vuex from 'vuex'
@@ -25,25 +23,9 @@ Vue.use(Vuex)
 Vue.config.productionTip = false
 const routes = [
   {
-    path: '/',
-    name: 'landing',
-    component: Landing,
-    meta: {
-      guest: true
-    }
-  },
-  {
     path: '/login',
     name: 'login',
     component: Login,
-    meta: {
-      guest: true
-    }
-  },
-  {
-    path: '/signup',
-    //name: 'signup',
-    component: SignUp,
     meta: {
       guest: true
     }
