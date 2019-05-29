@@ -1,29 +1,53 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const pool = require("../database");
+const db = require("../pgConnection");
 const helpers = require("../lib/helpers");
 
-passport.use('local.signin', new LocalStrategy({
+/*passport.use('local.signin', new LocalStrategy({
   usernameField: 'username',
   passwordField: 'password',
   passReqToCallback: true
 }, async (req, username, password, done) => {
-  console.log('lkklasklsakl')
+  //console.log(req.body, 'en la biblio')
   const row = await pool.query('SELECT * FROM users WHERE username = ? LIMIT 1', [username])
   if (row.length > 0) {
     const user = row[0];
-    console.log(row, username)
     const validPassword = await helpers.matchPass(password, user.password);
     if (validPassword) {
-      done(null, user, req.flash('success', 'Welcome ' + user.username));
+      done(null, user);
     } else {
-      done(null, false, req.flash('message', 'Incorrect Password'))
+      done(null, false)
     }
   } else {
-    return done(null, false, req.flash('message', 'El usuario no existe'))
+    return done(null, false)
   }
 }
-));
+));*/
+
+passport.use('local.signin', new LocalStrategy({
+  usernameField: 'rut',
+  passwordField: 'password',
+  passReqToCallback: true
+}, async (rut, password, done) => {
+  db.one('SELECT * FROM usuario WHERE rut = $1', [rut])
+  .then(async row=>{
+    const user = row;
+    const validPassword = await helpers.matchPass(password, user.contrasenia);
+    console.log(password, rut, validPassword)
+    console.log(user.contrasenia)
+    if (validPassword) {
+      console.log("válido")
+      done(user)
+    } else {
+      console.log("malo 1")
+      done(null, false)
+    }
+    })
+    .catch(err=>{console.log(err)})
+  })
+);
+
 passport.use(
   "local.signup",
   new LocalStrategy(

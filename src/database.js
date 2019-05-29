@@ -4,7 +4,7 @@ const { promisify } = require("util");
 const pool = mysql.createPool(database);
 
 pool.getConnection((err, connection) => {
-  if (err) {
+  /*if (err) {
     if (err.code === "PROTOCOL_CONNECTION_LOST") {
       console.log("Database lost connection");
     }
@@ -15,11 +15,13 @@ pool.getConnection((err, connection) => {
       console.log("Conexión rechazada");
     }
   }
-  if (connection) connection.release();
-  console.log("DB is connected");
-  return;
+  if (connection) {
+    connection.release();
+    console.log("DB is connected");
+  }
+  return;*/
 });
 //Promisify
 pool.query = promisify(pool.query);
 
-module.exports = pool;
+//module.exports = pool;
