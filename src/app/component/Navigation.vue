@@ -87,7 +87,7 @@ export default {
           this.$store.commit("changeUser", {});
           this.$store.commit("addMenu", []);
           //console.log(localStorage.getItem("user"), "saliendo");
-          this.$router.push("/login");
+          this.$router.push("/");
         })
         .catch(err => {
           //console.log("mala");

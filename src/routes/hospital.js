@@ -14,8 +14,9 @@ const authMiddleware = (req, res, next) => {
 
 router.get("/medicamentos", (req, res)=>{
   db.any("SELECT * FROM medicamento")
-  .then(data=>{
-    res.send({data})
+  .then(meds=>{
+    console.log(meds[0])
+    res.status(200).json({meds})
   })
   .catch(err=>{
     console.log(err)
@@ -144,6 +145,32 @@ router.get("/allUsuarios", (req, res)=>{
   .then(users=>{
     console.log(users)
     res.status(200).json({users})
+  })
+  .catch(err=>{
+    console.log(err)
+    res.status(500).json({err, msg:"Ha ocurrido un error"})
+  })
+})
+
+router.get("/enfermeres", (req, res)=>{
+  db.any("SELECT rut, nombre, apellido \
+                FROM usuario WHERE (tipo_usuario = 3 OR tipo_usuario = 5) AND bool_activo = TRUE")
+  .then(enfermeres=>{
+    console.log(enfermeres)
+    res.status(200).json({enfermeres})
+  })
+  .catch(err=>{
+    console.log(err)
+    res.status(500).json({err, msg:"Ha ocurrido un error"})
+  })
+})
+
+router.get("/mediques", (req, res)=>{
+  db.any("SELECT rut, nombre, apellido \
+                FROM usuario WHERE (tipo_usuario = 2 OR tipo_usuario = 4) AND bool_activo = TRUE")
+  .then(meds=>{
+    console.log(meds)
+    res.status(200).json({meds})
   })
   .catch(err=>{
     console.log(err)

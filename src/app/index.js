@@ -5,8 +5,10 @@ import VueRouter from 'vue-router'
 import Profile from './component/Profile.vue'
 import Login from './component/Login.vue'
 import VerPacientes from "./component/VerPacientes.vue"
+import VerMedicamentos from "./component/VerMedicamentos.vue"
 import VerUsuarios from "./component/VerUsuarios.vue"
 import AgregarUsuario from "./component/AgregarUsuario.vue"
+import AgregarFicha from "./component/AgregarFicha.vue"
 import VueResource from 'vue-resource';
 //import ToggleButton from 'vue-js-toggle-button'
 import Bootstrap from 'bootstrap-vue'
@@ -23,7 +25,7 @@ Vue.use(Vuex)
 Vue.config.productionTip = false
 const routes = [
   {
-    path: '/login',
+    path: '/',
     name: 'login',
     component: Login,
     meta: {
@@ -39,7 +41,9 @@ const routes = [
     },
     children: [
       { path: '', component: VerPacientes, meta: { requiresAuth: true } },
+      { path: 'agregar-ficha', component: AgregarFicha, meta: { requiresAuth: true } },
       { path: 'agregar-usuario', component: AgregarUsuario, meta: { requiresAuth: true, requiresAdmin: true} },
+      { path: 'ver-medicamentos', component: VerMedicamentos, meta: { requiresAuth: true } },
       { path: 'ver-usuarios', component: VerUsuarios, meta: { requiresAuth: true, requiresAdmin: true } }
     ]
   }
@@ -63,7 +67,6 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth) {
     let user = JSON.parse(localStorage.getItem('user'))
     let tipo = user.tipo_usuario
-    console.log(isAdmin(tipo), "en el before each")
     if (user != null) {
       if(isAdmin(tipo) && to.meta.requiresAdmin){
         next()
@@ -84,7 +87,6 @@ router.beforeEach((to, from, next) => {
   } else if (to.matched.some(record => record.meta.guest)) {
     let user = localStorage.getItem('user')
     if (user != null) {
-      //console.log("entra acá en lo raro")
       next({
         path: '/profile',
         params: { nextUrl: to.fullPath }
