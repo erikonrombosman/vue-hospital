@@ -23,6 +23,7 @@ router.get("/medicamentos", (req, res)=>{
   })
 })
 
+
 router.post('/signUp', async (req, res) => {
   const newUser = {
     username: req.body.username,
@@ -73,6 +74,12 @@ router.post("/agregarPaciente", (req, res)=>{
     console.log(err)
     res.status(500).json({message: "Error", error: err})
   })
+})
+
+router.post("/agregarFicha", (req, res)=>{
+  let queryData = req.body
+  console.log(queryData)
+  res.end()
 })
 
 router.get("/pacientes", (req, res)=>{

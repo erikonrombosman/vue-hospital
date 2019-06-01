@@ -130,7 +130,7 @@
             <div class="col-md-12 align-right">
               <v-btn
                 color="primary"
-                @click="agregarUsuario()"
+                @click="agregarFicha()"
                 right
               >
               <v-icon>save</v-icon>
@@ -222,6 +222,25 @@
             medicos.push(med.rut + "  "+med.nombre+" "+med.apellido)
           })
           this.medicos = medicos;
+        })
+        .catch(err=>{
+          console.log(err)
+        })
+      },
+      agregarFicha(){
+        this.$http.post("/pg/agregarFicha",{
+          diagnostico: this.diagnostico,
+          fechaingreso: this.date,
+          fechaficha: new Date(),
+          pesoingreso: this.pesoIngreso,
+          pesoActual: this.pesoActual,
+          rutmedico: this.selectMed.split(" ")[0],
+          rutenfermera: this.selectEnfermera.split(" ")[0],
+          rutpaciente: this.selectPaciente.split(" ")[0],
+          estadopaciente: "Diagnóstico General"
+        })
+        .then(ficha=>{
+          console.log("wiiiii")
         })
         .catch(err=>{
           console.log(err)
