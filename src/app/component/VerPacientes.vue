@@ -240,12 +240,10 @@
       getPacientes(){
         this.$http.get("/pg/pacientes")
         .then(res=>{
-          console.log(res.data)
+          //console.log(res.data)
           if(res.status == 200){
             this.pacientes = res.data.data;
-            console.log("éxito")
           }else{
-            console.log("wiiii")
           }
         })
         .catch(err=>{
@@ -261,16 +259,13 @@
           alergias: this.alergias
         })
         .then(res=>{
-          console.log(res.data.paciente)
           this.pacientes.push(res.data.paciente);
           this.successAlert = true;
           this.failAlert = false;
-          console.log("exito")
         })
         .catch(err=>{
           this.failAlert = true;
           this.successAlert = false;
-          console.log("err")
         })
       },
 

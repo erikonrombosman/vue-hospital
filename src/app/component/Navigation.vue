@@ -69,11 +69,11 @@ export default {
   },
   computed: {
     user() {
-      console.log(this.$store.state.user)
+      //console.log(this.$store.state.user)
       return this.$store.state.user;
     },
     menu() {
-      console.log(this.$store.state.menu, "en el navigation 2");
+      //console.log(this.$store.state.menu, "en el navigation 2");
       return this.$store.state.menu;
     }
   },

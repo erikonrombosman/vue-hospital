@@ -11,32 +11,14 @@
           </div>
           <div class="form-group">
             <div class="form-row">
-              <div class="col-md-4">
+              <div class="col-md-3">
                   <v-combobox
                     v-model="selectPaciente"
                     :items="pacientes"
                     label="Rut o nombre del paciente"
                   ></v-combobox>
               </div>
-              <div class="col-md-4">
-                <v-combobox
-                  v-model="selectEnfermera"
-                  :items="enfermeres"
-                  label="Rut o nombre de la enfermera"
-                ></v-combobox>
-              </div>
-              <div class="col-md-4">
-                <v-combobox
-                  v-model="selectMed"
-                  :items="medicos"
-                  label="Rut o nombre del médico"
-                ></v-combobox>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="form-row">
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <v-text-field
                   v-model="pesoIngreso"
                   type="number"
@@ -44,15 +26,15 @@
                   label="Peso de ingreso (kg)"
                 ></v-text-field>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <v-text-field
                   v-model="pesoActual"
-                  type="text"
+                  type="number"
                   :error-messages="errorMessages.pswd"
                   label="Peso actual (kg)"
                 ></v-text-field>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <v-flex>
                   <v-menu
                     :close-on-content-click="false"
@@ -134,7 +116,7 @@
                 right
               >
               <v-icon>save</v-icon>
-                Agregar Usuario
+                Agregar Ficha
               </v-btn>
             </div>
           </div>
@@ -147,6 +129,7 @@
 
 <script>
   import moment from 'moment'
+import { parse } from 'path';
   moment.locale("es");
   const { validate, clean, format } = require('rut.js')
   export default {
@@ -187,6 +170,13 @@
       this.getMeds();
     },
 
+    computed:{
+      user() {
+        console.log(this.$store.state.user)
+        return this.$store.state.user;
+      }
+    },
+
     methods: {
       getPacientes(){
         this.$http.get("/pg/pacientes")
@@ -214,7 +204,12 @@
           console.log(err)
         })
       },
+      tipoUsuario(){
+        let userType = this.user.tipo_usuario
+
+      },
       getMeds(){
+        
         this.$http.get("/pg/mediques")
         .then(res=>{
           let medicos = []
@@ -232,10 +227,8 @@
           diagnostico: this.diagnostico,
           fechaingreso: this.date,
           fechaficha: new Date(),
-          pesoingreso: this.pesoIngreso,
-          pesoActual: this.pesoActual,
-          rutmedico: this.selectMed.split(" ")[0],
-          rutenfermera: this.selectEnfermera.split(" ")[0],
+          pesoingreso: parseInt(this.pesoIngreso),
+          pesoactual: parseInt(this.pesoActual),
           rutpaciente: this.selectPaciente.split(" ")[0],
           estadopaciente: "Diagnóstico General"
         })

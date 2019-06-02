@@ -49,7 +49,7 @@ const routes = [
   }
 ]
 function isAdmin(tipo){
-  console.log(tipo)
+  //console.log(tipo)
   if(tipo===1 || tipo ===2 || tipo===3){
     return true
   }else{
@@ -107,7 +107,7 @@ const store = new Vuex.Store({
       state.user = userP
     },
     addMenu(state, newMenu) {
-      console.log(newMenu, "mutation menu")
+      //console.log(newMenu, "mutation menu")
       state.menu = newMenu
     }
   }

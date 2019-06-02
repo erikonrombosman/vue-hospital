@@ -77,9 +77,33 @@ router.post("/agregarPaciente", (req, res)=>{
 })
 
 router.post("/agregarFicha", (req, res)=>{
-  let queryData = req.body
-  console.log(queryData)
-  res.end()
+  let qd = req.body
+  let tipo = req.user.tipo_usuario
+  if(tipo===2 || tipo===4){
+    qd.rutmedico = String(req.user.rut);
+    qd.rutenfermera = null
+  }
+  if(tipo===3 || tipo===5){
+    qd.rutenfermera = String(req.user.rut);
+    qd.rutmedico = null
+  }
+  qd.fechaficha = req.body.fechaficha.split("T")[0]
+  console.log(qd.rutpaciente.length)
+  console.log(qd)
+  db.tx(t=>{
+    let query = "INSERT INTO ficha (${this~}) \
+                VALUES (${diagnostico}, ${fechaingreso}, ${fechaficha},\
+                 ${pesoingreso}, ${pesoactual}, ${rutpaciente}, ${estadopaciente}, ${rutmedico}, ${rutenfermera})"
+    console.log(query)
+    return t.none(query,qd) 
+  })
+  .then(ficha=>{
+    res.status(200).json({msg:"Todo bien"})
+  })
+  .catch(err=>{
+    console.log(err)
+    res.status(500).json({msg:"Todo mal"})
+  })
 })
 
 router.get("/pacientes", (req, res)=>{
