@@ -93,9 +93,10 @@ router.post("/agregarFicha", (req, res)=>{
   db.tx(t=>{
     let query = "INSERT INTO ficha (${this~}) \
                 VALUES (${diagnostico}, ${fechaingreso}, ${fechaficha},\
-                 ${pesoingreso}, ${pesoactual}, ${rutpaciente}, ${estadopaciente}, ${rutmedico}, ${rutenfermera})"
+                ${pesoingreso}, ${pesoactual}, ${rutpaciente}, ${estadopaciente}, ${regimen}, ${reposo},\
+                ${oxigeno}, ${cuidados}, ${rutmedico}, ${rutenfermera})"
     console.log(query)
-    return t.none(query,qd) 
+    return t.none(query, qd) 
   })
   .then(ficha=>{
     res.status(200).json({msg:"Todo bien"})
@@ -179,6 +180,22 @@ router.get("/allUsuarios", (req, res)=>{
   })
   .catch(err=>{
     console.log(err)
+    res.status(500).json({err, msg:"Ha ocurrido un error"})
+  })
+})
+
+router.get("/medSueros", (req, res)=>{
+  let query = "SELECT m.nombre as nombre_med, m.codmed, \
+                      JSON_AGG(JSON_BUILD_OBJECT('nombre_suero', s.nombre)) as lista_sueros\
+              FROM medicamento m INNER JOIN medicamento_suero ms ON m.codmed = ms.codmed\
+                   INNER JOIN suero s ON s.codsuero = ms.codsuero\
+              GROUP BY m.codmed\
+              ORDER BY m.codmed";
+  db.any(query)
+  .then(meds=>{
+    res.status(200).json({meds})
+  })
+  .catch(err=>{
     res.status(500).json({err, msg:"Ha ocurrido un error"})
   })
 })

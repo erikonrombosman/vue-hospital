@@ -107,7 +107,49 @@
             </div>
           </div>
 
+          <div class="form-row">
+            <h1>Medicamentos</h1>
+          </div>
 
+          <div v-for="(med, i) in medicamentosFicha" :key="i">
+            <div class="form-group form-row">
+              <div class="col-md-4">
+                <v-combobox
+                  v-model="selectMedicamento[i].med"
+                  :items="pacientes"
+                  label="Nombre del medicamento"
+                ></v-combobox>
+              </div>
+              <div class=col-md-1>
+                <v-text-field
+                  type="number"
+                  v-model="selectMedicamento[i].dosis"
+                  label="Dosis"
+                ></v-text-field>
+              </div>
+              <div class=col-md-1>
+                <v-select
+                  v-model="selectMedicamento[i].unidad"
+                  :items="unidad"
+                  label="Unidad"
+                ></v-select>
+              </div>
+              <div class=col-md-2>
+                <v-select
+                v-model="selectMedicamento[i].frec"
+                  :items="frecuencia"
+                  label="Frecuencia"
+                ></v-select>
+              </div>
+              <div class=col-md-1>
+                <v-text-field
+                  type="number"
+                  v-model="selectMedicamento[i].dias"
+                  label="Días"
+                ></v-text-field>
+              </div>
+            </div>
+          </div>
           <div class="form-row">
             <div class="col-md-12 align-right">
               <v-btn
@@ -149,6 +191,13 @@ import { parse } from 'path';
       pacientes: [],
       enfermeres: [],
       medicos: [],
+      medicamentosFicha: [1],
+      frecuencia: ["c/8 hrs", "c/6 hrs", "c/12 hrs", "c/24 hrs", "c/3 hrs", "c/4 hrs" ],
+      unidad: ["mg", "mg/kg", "mg/día", "mg/kg/día"],
+      dosis: 0,
+      dias: 1,
+      medSueros: [],
+      selectMedicamento: [{med: "Paracetamol", dosis: "", unidad: "", frec: "", dias: ""}]
     }),
 
     watch: {
@@ -166,60 +215,40 @@ import { parse } from 'path';
 
     created () {
       this.getPacientes();
-      this.getEnfermeres();
-      this.getMeds();
+      this.getMedicamentosSueros();
     },
 
-    computed:{
-      user() {
-        console.log(this.$store.state.user)
-        return this.$store.state.user;
-      }
-    },
 
     methods: {
       getPacientes(){
         this.$http.get("/pg/pacientes")
         .then(res=>{
-          let pacientes = []
-          res.data.data.map(pac=>{
-            pacientes.push(pac.rut + "  "+pac.nombres+" "+pac.apellidos)
-          })
-          this.pacientes = pacientes;
+          if(res.status===200){
+            let pacientes = []
+            res.data.data.map(pac=>{
+              pacientes.push(pac.rut + "  "+pac.nombres+" "+pac.apellidos)
+            })
+            this.pacientes = pacientes;
+          }else{
+            console.log("Ha ocurrido un error");
+          }
         })
         .catch(err=>{
           console.log(err)
         })
       },
-      getEnfermeres(){
-        this.$http.get("/pg/enfermeres")
+      getMedicamentosSueros(){
+        this.$http.get("/pg/medSueros")
         .then(res=>{
-          let enfermeres = []
-          res.data.enfermeres.map(pac=>{
-            enfermeres.push(pac.rut + "  "+pac.nombre+" "+pac.apellido)
-          })
-          this.enfermeres = enfermeres;
-        })
-        .catch(err=>{
-          console.log(err)
-        })
-      },
-      tipoUsuario(){
-        let userType = this.user.tipo_usuario
+          if(res.status ===200){
+            this.medSueros = res.data.meds;
+            console.log(this.medSueros, "en el medSueros")
+          }else{
 
-      },
-      getMeds(){
-        
-        this.$http.get("/pg/mediques")
-        .then(res=>{
-          let medicos = []
-          res.data.meds.map(med=>{
-            medicos.push(med.rut + "  "+med.nombre+" "+med.apellido)
-          })
-          this.medicos = medicos;
+          }
         })
         .catch(err=>{
-          console.log(err)
+
         })
       },
       agregarFicha(){
@@ -230,7 +259,11 @@ import { parse } from 'path';
           pesoingreso: parseInt(this.pesoIngreso),
           pesoactual: parseInt(this.pesoActual),
           rutpaciente: this.selectPaciente.split(" ")[0],
-          estadopaciente: "Diagnóstico General"
+          estadopaciente: "Diagnóstico General",
+          regimen: this.regimen,
+          reposo: this.reposo,
+          oxigeno: this.oxigenoterapia,
+          cuidados: this.cuidadosEnfermera
         })
         .then(ficha=>{
           console.log("wiiiii")
