@@ -111,12 +111,12 @@
             <h1>Medicamentos</h1>
           </div>
 
-          <div v-for="(med, i) in medicamentosFicha" :key="i">
+          <div v-for="(med, i) in selectMedicamento" :key="i">
             <div class="form-group form-row">
               <div class="col-md-4">
                 <v-combobox
                   v-model="selectMedicamento[i].med"
-                  :items="pacientes"
+                  :items="medsMostrar"
                   label="Nombre del medicamento"
                 ></v-combobox>
               </div>
@@ -136,7 +136,7 @@
               </div>
               <div class=col-md-2>
                 <v-select
-                v-model="selectMedicamento[i].frec"
+                  v-model="selectMedicamento[i].frec"
                   :items="frecuencia"
                   label="Frecuencia"
                 ></v-select>
@@ -148,8 +148,23 @@
                   label="Días"
                 ></v-text-field>
               </div>
+              <div class="col-md-3">
+                <v-combobox
+                  v-model="selectMedicamento[i].suero"
+                  :items="medSueros[selectMedicamento[i].med]"
+                  label="Nombre del suero"
+                ></v-combobox>
+              </div>
             </div>
           </div>
+            <v-btn
+              color="primary"
+              @click="agregarMedicamento()"
+              right
+            >
+            <v-icon>save</v-icon>
+              Agregar Medicamento
+            </v-btn>
           <div class="form-row">
             <div class="col-md-12 align-right">
               <v-btn
@@ -186,32 +201,16 @@ import { parse } from 'path';
       pesoIngreso: "",
       pesoActual: "",
       selectPaciente: "",
-      selectMed: "",
-      selectEnfermera: "",
       pacientes: [],
-      enfermeres: [],
-      medicos: [],
-      medicamentosFicha: [1],
       frecuencia: ["c/8 hrs", "c/6 hrs", "c/12 hrs", "c/24 hrs", "c/3 hrs", "c/4 hrs" ],
       unidad: ["mg", "mg/kg", "mg/día", "mg/kg/día"],
       dosis: 0,
       dias: 1,
-      medSueros: [],
-      selectMedicamento: [{med: "Paracetamol", dosis: "", unidad: "", frec: "", dias: ""}]
+      medSueros: {},
+      selectMedicamento: [{med: "", dosis: "", unidad: "", frec: "", dias: "", suero: "", suero_id: ""}],
+      medsMostrar: []
     }),
 
-    watch: {
-      dialog (val) {
-        val || this.close()
-      },
-      rut: function(){
-        this.rut = format(this.rut)
-      },
-      select: function(){
-        this.realSelected = this.tiposUs.indexOf(this.select) + 1;
-        console.log(this.realSelected )
-      }
-    },
 
     created () {
       this.getPacientes();
@@ -237,12 +236,27 @@ import { parse } from 'path';
           console.log(err)
         })
       },
+      agregarMedicamento(){
+        this.selectMedicamento.push({med: "", dosis: "", unidad: "", frec: "", dias: "", suero: "", suero_id: ""})
+      },
       getMedicamentosSueros(){
         this.$http.get("/pg/medSueros")
         .then(res=>{
           if(res.status ===200){
-            this.medSueros = res.data.meds;
-            console.log(this.medSueros, "en el medSueros")
+            let medsMostrar = []
+            let medSueros = {}
+            res.data.meds.map(med=>{
+              medsMostrar.push(med.nombre_med)
+              let lista_sueros = []
+              med.lista_sueros.map(suero=>{
+                console.log(suero)
+                lista_sueros.push(suero.nombre_suero)
+              })
+              medSueros[med.nombre_med] = lista_sueros
+            })
+            this.medSueros = medSueros;
+            this.medsMostrar = medsMostrar;
+            console.log(medSueros, medsMostrar)
           }else{
 
           }

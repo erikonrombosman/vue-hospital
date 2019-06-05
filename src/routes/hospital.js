@@ -186,7 +186,7 @@ router.get("/allUsuarios", (req, res)=>{
 
 router.get("/medSueros", (req, res)=>{
   let query = "SELECT m.nombre as nombre_med, m.codmed, \
-                      JSON_AGG(JSON_BUILD_OBJECT('nombre_suero', s.nombre)) as lista_sueros\
+                      JSON_AGG(JSON_BUILD_OBJECT('nombre_suero', s.nombre, 'suero_id', s.codsuero)) as lista_sueros\
               FROM medicamento m INNER JOIN medicamento_suero ms ON m.codmed = ms.codmed\
                    INNER JOIN suero s ON s.codsuero = ms.codsuero\
               GROUP BY m.codmed\
