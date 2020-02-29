@@ -12,22 +12,13 @@
 <script>
 import router from "../index.js";
 import Navigation from "./Navigation.vue";
-import Hola from "./Hola.vue";
 //import Chao from "./Chao.vue";
 export default {
   components: {
     navigation: Navigation
   },
   data() {
-    return {
-      message: "",
-      error: false,
-      userL: {
-        id: "",
-        name: "",
-        fullname: ""
-      }
-    };
+    return {};
   },
   computed: {
     user() {
@@ -54,30 +45,23 @@ export default {
           //console.log("mala");
         });
     },
-    selectFile() {
-      this.file = this.$refs.file.files[0];
-      (this.message = ""), (this.error = false);
-    },
-    sendFile() {
-      const formData = new FormData();
-      formData.append("file", this.file);
-      this.$http
-        .post("/links/upload", formData)
-        .then(res => {
-          //console.log(res);
-          this.message = "file has been upload";
-          this.file = "";
-          this.error = false;
-        })
-        .catch(err => {
-          //console.log(err, "aca");
-          this.message = err.body.error;
-          this.error = true;
-          //console.log(err);
-        });
+    checkPermision(){
+      this.$http.get("/auth/authData")
+      .then(res=>{
+        console.log(res.body.user)
+        if (res.body.user){
+          console.log("entra");
+        }else{
+          this.logout()
+        }
+      })
+      .catch(err=>{
+        console.log(err)
+      })
     }
   },
   mounted() {
+    this.checkPermision();
     //this.$store.commit("changeUser", JSON.parse(localStorage.getItem("user")));
   },
   watch: {

@@ -1,19 +1,24 @@
 import Vue from 'vue'
-import App from './component/App.vue'
-
-import VueRouter from 'vue-router'
-import Profile from './component/Profile.vue'
-import Login from './component/Login.vue'
-import VerPacientes from "./component/VerPacientes.vue"
-import VerMedicamentos from "./component/VerMedicamentos.vue"
-import VerUsuarios from "./component/VerUsuarios.vue"
-import AgregarUsuario from "./component/AgregarUsuario.vue"
-import AgregarFicha from "./component/AgregarFicha.vue"
-import VueResource from 'vue-resource';
-//import ToggleButton from 'vue-js-toggle-button'
-import Bootstrap from 'bootstrap-vue'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
+import VueRouter from 'vue-router'
+import Bootstrap from 'bootstrap-vue'
+import VueResource from 'vue-resource';
+
+import App from './component/App.vue'
+import Login from './component/Login.vue'
+import Profile from './component/Profile.vue'
+import VerFichas from "./component/VerFicha.vue"
+import VerUsuarios from "./component/VerUsuarios.vue"
+import AgregarFicha from "./component/AgregarFicha.vue"
+import VerPacientes from "./component/VerPacientes.vue"
+import AgregarUsuario from "./component/AgregarUsuario.vue"
+import VerMedicamentos from "./component/VerMedicamentos.vue"
+
+
+
+//import ToggleButton from 'vue-js-toggle-button'
+
 
 Vue.use(Vuetify)
 Vue.use(Bootstrap)
@@ -44,7 +49,8 @@ const routes = [
       { path: 'agregar-ficha', component: AgregarFicha, meta: { requiresAuth: true } },
       { path: 'agregar-usuario', component: AgregarUsuario, meta: { requiresAuth: true, requiresAdmin: true} },
       { path: 'ver-medicamentos', component: VerMedicamentos, meta: { requiresAuth: true } },
-      { path: 'ver-usuarios', component: VerUsuarios, meta: { requiresAuth: true, requiresAdmin: true } }
+      { path: 'ver-usuarios', component: VerUsuarios, meta: { requiresAuth: true, requiresAdmin: true } },
+      { path: 'ver-fichas', component: VerFichas, meta: { requiresAuth: true} }
     ]
   }
 ]

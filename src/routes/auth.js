@@ -57,10 +57,17 @@ router.post("/signUp", (req, res)=>{
 })
 
 router.get('/checkLogin', (req, res) => {
+  console.log(req.user)
   res.status(200).json({
     logged: true
   });
 });
+
+router.get("/authData", (req, res)=>{
+  res.status(200).json({
+    user: req.user
+  })
+})
 
 router.get('/logout', (req, res) => {
   console.log("Se llama")
@@ -92,7 +99,7 @@ router.get('/update', (req, res) => {
 router.get('/register', (req, res) => {
   console.log("llega acá")
   User.create(
-    {rut: '19.207.278-7', tipo_usuario_id: 'AD', nombre: 'Erik', bool_activo:true},
+    {rut: '19.396.079-0', user_type_id: 'ADMIN-MED', nombres: 'Erik', apellidos :'Astorga',bool_activo:true, password:'test'},
     'test')
     .then(res=>{
       console.log(res)

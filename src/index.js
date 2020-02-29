@@ -1,8 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
-//const exphbs = require("express-handlebars");
-//const path = require("path");
-//const cookieSession = require('cookie-session')
+
 const CookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth');
 const Pg = require('pg');
@@ -40,7 +38,7 @@ app.use(CookieParser());
 app.use(Session({
   store: new pgSession({
     pg: Pg,
-    conString:"postgres://postgres:postgres@localhost:5432/hospi_cqbo",
+    conString:"postgres://postgres:postgres@localhost:5433/hospital",
     tableName: 'session',
     schemaName: 'public',
   }),

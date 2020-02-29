@@ -88,8 +88,6 @@ router.post("/agregarFicha", (req, res)=>{
     qd.rutmedico = null
   }
   qd.fechaficha = req.body.fechaficha.split("T")[0]
-  console.log(qd.rutpaciente.length)
-  console.log(qd)
   db.tx(t=>{
     let query = "INSERT INTO ficha (${this~}) \
                 VALUES (${diagnostico}, ${fechaingreso}, ${fechaficha},\
@@ -104,6 +102,87 @@ router.post("/agregarFicha", (req, res)=>{
   .catch(err=>{
     console.log(err)
     res.status(500).json({msg:"Todo mal"})
+  })
+})
+
+router.post("/agregarFicha2", (req, res)=>{
+  let tipo = req.user.tipo_usuario
+  let qd1 = {
+    diagnostico: req.body.diagnostico,
+    fechaingreso: req.body.fechaingreso,
+    fechaficha: req.body.fechaficha,
+    pesoingreso: req.body.pesoingreso,
+    pesoactual: req.body.pesoactual,
+    rutpaciente: req.body.rutpaciente,
+    estadopaciente: req.body.estadopaciente,
+    regimen: req.body.regimen,
+    reposo: req.body.reposo,
+    oxigeno: req.body.oxigeno,
+    cuidados: req.body.cuidados,
+  }
+  let sueros = {}
+  let codficha = -1
+  let medicamentos = {}
+  let qd2 = req.body.medicamentos
+  let promises = []
+  if(tipo===2 || tipo===4){
+    qd1.rutmedico = String(req.user.rut);
+    qd1.rutenfermera = null
+  }
+  if(tipo===3 || tipo===5){
+    qd1.rutenfermera = String(req.user.rut);
+    qd1.rutmedico = null
+  }
+  db.tx(t=>{
+    return t.sequence((order, data)=>{
+      if(order==0){
+        let query = "INSERT INTO ficha (${this~}) \
+                VALUES (${diagnostico}, ${fechaingreso}, ${fechaficha},\
+                ${pesoingreso}, ${pesoactual}, ${rutpaciente}, ${estadopaciente}, ${regimen}, ${reposo},\
+                ${oxigeno}, ${cuidados}, ${rutmedico}, ${rutenfermera}) RETURNING codficha"
+        return t.one(query, qd1) 
+      }
+      if(order==1){
+        codficha = data.codficha
+        console.log(codficha, "codFicha", "uno")
+        return t.any("SELECT * FROM suero")
+      }
+      if(order==2){
+        data.map(suero=>{
+          sueros[suero.nombre] = suero.codsuero
+        })
+        return t.any("SELECT * from medicamento")
+      }
+      if(order==3){
+        data.map(med=>{
+          medicamentos[med.nombre] = med.codmed
+        })
+        console.log(qd2)
+        qd2.map(q=>{
+          let qd3 = {
+            codficha,
+            codmed: medicamentos[q.med],
+            dosis: parseInt(q.dosis),
+            dosisunidad: q.unidad,
+            frecuenciahoras: parseInt(q.frec.split()[0].split("/")[1]),
+            dias:parseInt(q.dias),
+            codsuero: sueros[q.suero]
+          }
+          query = "INSERT INTO indmedicas (${this~}) VALUES ( ${codficha}, ${codmed},\
+                            ${dosis}, ${dosisunidad}, ${frecuenciahoras}, ${dias}, ${codsuero})"
+          promises.push(t.none(query, qd3))
+        })
+        return t.batch(promises)
+      }
+    })
+  })
+  .then(success=>{
+    console.log("exito")
+    res.status(200).json({msg: `Se ha agregado la ficha con el número ${codficha}` , codficha: codficha})
+  })
+  .catch(err=>{
+    console.log(err)
+    res.status(500).json({msg: "Ha ocurrido un error", err})
   })
 })
 
@@ -226,6 +305,24 @@ router.get("/mediques", (req, res)=>{
   })
 })
 
+router.get("/allFichas", (req, res)=>{
+  let query = "SELECT f.codficha, f.diagnostico, f.fechaficha, f.pesoingreso, f.pesoactual,\
+                      f.rutmedico, f.rutenfermera, f.rutpaciente, f.oxigeno, f.cuidados, f.regimen, f.reposo,\
+                      CONCAT(m.rut, ' ', m.nombre ,' ',m.apellido) as medfullname, CONCAT(e.rut, ' ',e.nombre, ' ', e.apellido) as enfullname,\
+                      CONCAT(p.rut, ' ', p.nombres, ' ', p.apellidos) as pacfullname\
+              FROM ficha f LEFT JOIN usuario m ON f.rutmedico = m.rut\
+                            LEFT JOIN usuario e ON f.rutenfermera = e.rut\
+                            INNER JOIN paciente p ON f.rutpaciente = p.rut\
+              ORDER BY f.fechaficha DESC"
+  db.any(query)
+  .then(fichas=>{
+    res.status(200).json({fichas})
+  })
+  .catch(err=>{
+    res.status(500).json({err, msg: "Ha ocurrido un error"})
+  })
+})
+
 router.put("/bloquearUser/:rut", (req, res)=>{
   const rut = req.params.rut
   const query = 'UPDATE usuario SET bool_activo = FALSE WHERE rut = $1'
@@ -251,6 +348,7 @@ router.put("/desbloquearUser/:rut", (req, res)=>{
     res.status(500).json({msg: "Ha ocurrido un error"})
   })
 })
+
 
 
 

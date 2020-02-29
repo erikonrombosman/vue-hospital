@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      <h1>Ver  usuarios</h1>
+      <h1>Ver  Fichas</h1>
     </v-card-title>
     <v-card-text>
     <v-toolbar flat color="white">
@@ -17,15 +17,15 @@
     </v-toolbar>
     <v-data-table
       :headers="headers"
-      :items="usuarios"
+      :items="fichas"
       :search="search"
       class="elevation-1"
     >
       <template v-slot:items="props">
-        <td>{{ props.item.rut }}</td>
-        <td class="text">{{ props.item.fullname }}</td>
-        <td class="text">{{ props.item.estado }}</td>
-        <td class="text">{{ props.item.user_type }}</td>
+        <td>{{ props.item.pacfullname }}</td>
+        <td class="text">{{ props.item.mostrar }}</td>
+        <td class="text">{{ props.item.fechaficha }}</td>
+        <td class="text">{{ props.item.diagnostico }}</td>
         <td class="justify-center">
           <v-btn dark small color="red"
              v-if="props.item.bool_activo" 
@@ -54,19 +54,19 @@
   export default {
     data: () => ({ 
       search: "",
-      usuarios: [],
+      fichas: [],
       errorMessages: {},
       successAlert: false,
       failAlert: false,
       headers: [
         {
-          text: 'Rut usuario',
+          text: 'Rut paciente',
           align: 'left',
-          value: 'rut'
+          value: 'pacfullname'
         },
-        { text: 'Nombre', value: 'fullname' },
-        { text: 'Estado', value: 'estado' },
-        { text: 'Tipo de Usuario', value: 'user_type' },
+        { text: 'Med/Enfermera', value: 'mostrar' },
+        { text: 'Fecha', value: 'fechaficha' },
+        { text: 'Diagnóstico', value: 'diagnostico' },
         { text: 'Acciones', value: 'rut', sortable: false, width:"300px" }
       ],
     }),
@@ -78,25 +78,23 @@
     },
 
     created () {
-      this.getUsuarios()
+      this.getFichas();
     },
 
     methods: {
-      getUsuarios(){
-        this.$http.get("/pg/allUsuarios")
+      getFichas(){
+        this.$http.get("/pg/allFichas")
         .then(res=>{
-          console.log(res.data)
-          if(res.status == 200){
-            this.usuarios = res.data.users;
-            res.data.users.map(user=>{
-              user.estado = user.bool_activo ? "Activo" : "Bloqueado"
-              user.fullname = user.nombre + " " + user.apellido
-            })
-            console.log(this.usuarios)
-            console.log("éxito en traer usuarios")
-          }else{
-            console.log("wiiii")
-          }
+          let fichas = []
+          res.data.fichas.map(ficha=>{
+            if(ficha.rutenfermera==null){
+              ficha.mostrar = ficha.medfullname
+            }else{
+              ficha.mostrar = ficha.enfullname
+            }
+            fichas.push(ficha)
+          })
+          this.fichas = fichas
         })
         .catch(err=>{
           console.log(err)
@@ -109,31 +107,6 @@
         this.dialog = true
       },
 
-      bloquearUsuario(user){
-        console.log(user, "bloquear")
-        this.$http.put(`/pg/bloquearUser/${user.rut}`)
-        .then(res=>{
-          swal("Éxito!", "Se ha bloqueado el usuario!", "success");
-          this.getUsuarios();
-        })
-        .catch(err=>{
-          swal("Error!", "No se ha podido desbloquear el usuario!", "error");
-          console.log(err)
-        })
-      },
-
-      desbloquearUsuario(user){
-        console.log(user, "bloquear")
-        this.$http.put(`/pg/desbloquearUser/${user.rut}`)
-        .then(res=>{
-          this.getUsuarios();
-          swal("Éxito!", "Se ha desbloqueado el usuario!", "success");
-        })
-        .catch(err=>{
-          swal("Error!", "No se ha podido desbloquear el usuario!", "error");
-          console.log(err)
-        })
-      },
 
       close () {
         this.dialog = false

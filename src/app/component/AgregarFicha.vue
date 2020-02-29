@@ -106,14 +106,12 @@
               </div>
             </div>
           </div>
-
-          <div class="form-row">
+          <div class="form-row"  v-if="userType==2 || userType==4">
             <h1>Medicamentos</h1>
           </div>
-
           <div v-for="(med, i) in selectMedicamento" :key="i">
             <div class="form-group form-row">
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <v-combobox
                   v-model="selectMedicamento[i].med"
                   :items="medsMostrar"
@@ -149,11 +147,16 @@
                 ></v-text-field>
               </div>
               <div class="col-md-3">
-                <v-combobox
+                <v-select
                   v-model="selectMedicamento[i].suero"
                   :items="medSueros[selectMedicamento[i].med]"
                   label="Nombre del suero"
-                ></v-combobox>
+                ></v-select>
+              </div>
+              <div class="col-md-1 ">
+                <v-btn color="red" dark @click="deleteMed(i)">Borrar
+                  <v-icon dark right class="justify-center">delete</v-icon>
+                </v-btn>
               </div>
             </div>
           </div>
@@ -186,7 +189,9 @@
 
 <script>
   import moment from 'moment'
-import { parse } from 'path';
+  import { parse } from 'path';
+  import swal from 'sweetalert';
+  import { setTimeout } from 'timers';
   moment.locale("es");
   const { validate, clean, format } = require('rut.js')
   export default {
@@ -207,7 +212,7 @@ import { parse } from 'path';
       dosis: 0,
       dias: 1,
       medSueros: {},
-      selectMedicamento: [{med: "", dosis: "", unidad: "", frec: "", dias: "", suero: "", suero_id: ""}],
+      selectMedicamento: [{med: "", dosis: "", unidad: "", frec: "", dias: "", suero: ""}],
       medsMostrar: []
     }),
 
@@ -216,9 +221,20 @@ import { parse } from 'path';
       this.getPacientes();
       this.getMedicamentosSueros();
     },
-
+    computed: {
+      userType(){
+        console.log(this.$store.state.user, "en ficha")
+        return this.$store.state.user.tipo_usuario
+      }
+    },
 
     methods: {
+      deleteMed(i){
+        console.log(i)
+        console.log(this.selectMedicamento)
+        this.selectMedicamento.splice(i,1)
+        console.log(this.selectMedicamento)
+      },
       getPacientes(){
         this.$http.get("/pg/pacientes")
         .then(res=>{
@@ -237,7 +253,7 @@ import { parse } from 'path';
         })
       },
       agregarMedicamento(){
-        this.selectMedicamento.push({med: "", dosis: "", unidad: "", frec: "", dias: "", suero: "", suero_id: ""})
+        this.selectMedicamento.push({med: "", dosis: "", unidad: "", frec: "", dias: "", suero: ""})
       },
       getMedicamentosSueros(){
         this.$http.get("/pg/medSueros")
@@ -249,24 +265,22 @@ import { parse } from 'path';
               medsMostrar.push(med.nombre_med)
               let lista_sueros = []
               med.lista_sueros.map(suero=>{
-                console.log(suero)
                 lista_sueros.push(suero.nombre_suero)
               })
               medSueros[med.nombre_med] = lista_sueros
             })
             this.medSueros = medSueros;
             this.medsMostrar = medsMostrar;
-            console.log(medSueros, medsMostrar)
           }else{
-
+            console.log("revisa el error en el back en agregar ficha - getMeds")
           }
         })
         .catch(err=>{
-
+          console.log(err)
         })
       },
       agregarFicha(){
-        this.$http.post("/pg/agregarFicha",{
+        this.$http.post("/pg/agregarFicha2",{
           diagnostico: this.diagnostico,
           fechaingreso: this.date,
           fechaficha: new Date(),
@@ -277,13 +291,21 @@ import { parse } from 'path';
           regimen: this.regimen,
           reposo: this.reposo,
           oxigeno: this.oxigenoterapia,
-          cuidados: this.cuidadosEnfermera
+          cuidados: this.cuidadosEnfermera,
+          medicamentos: this.selectMedicamento
         })
         .then(ficha=>{
-          console.log("wiiiii")
+          if (ficha.status===200){
+            swal("Éxito!", ficha.data.msg, "success");
+            setTimeout(()=>{
+              this.$router.push("/profile")
+            }, 1000)
+          }else{
+            swal("Error!",ficha.data.msg, "error");
+          }
         })
         .catch(err=>{
-          console.log(err)
+          swal("Error!",ficha.data.msg, "error");
         })
       }
     }

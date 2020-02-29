@@ -39,12 +39,17 @@
 
     <v-list dense class="pt-0">
       <v-list-tile v-for="item in menu" :key="item.text" @click="hola(item)">
-          <v-list-tile-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>{{ item.text }}</v-list-tile-title>
-          </v-list-tile-content>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-list-tile-action v-on="on">
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.text }}</v-list-tile-title>
+            </v-list-tile-content>
+          </template>
+          <span>{{item.text}}</span>
+        </v-tooltip>
       </v-list-tile>
 
       <v-list-tile @click="logout()">

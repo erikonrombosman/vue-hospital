@@ -9,13 +9,13 @@
 </template>
 
 <script>
-import Landing from "./Landing.vue";
+//import Landing from "./Landing.vue";
 import Login from "./Login.vue";
 import Profile from "./Profile.vue";
 export default {
   name: "app",
   components: {
-    landing: Landing,
+    //landing: Landing,
     login: Login,
     profile: Profile
   },

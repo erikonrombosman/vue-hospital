@@ -3,7 +3,7 @@ const PassportLocalSequelize = require('passport-local-sequelize');
 //import config from '../config.json';
 const bcrypt = require("bcryptjs")
 //postgres://user:pass@example.com:5432/dbname
-const dbUri = "postgres://postgres:postgres@localhost:5432/hospi_cqbo"
+const dbUri = "postgres://postgres:postgres@localhost:5433/hospital"
 // Setup sequelize db connection
 const db = new Sequelize(dbUri, { logging: false, dialect: "postgres" });
 
@@ -15,11 +15,11 @@ const User = db.define(
       type: Sequelize.STRING,
       primaryKey: true
     },
-    nombre: Sequelize.STRING,
-    apellido: Sequelize.STRING,
+    nombres: Sequelize.STRING,
+    apellidos: Sequelize.STRING,
     password: Sequelize.STRING,
     bool_activo: Sequelize.BOOLEAN,
-    tipo_usuario: Sequelize.INTEGER,
+    user_type_id: Sequelize.INTEGER,
     //email: Sequelize.STRING
   },
   {
@@ -31,7 +31,7 @@ const User = db.define(
 
 
 User.beforeCreate((user, options) => {
-  //console.log(user)
+  console.log(user.dataValues, options, "before create")
 	const salt = bcrypt.genSaltSync();
 	user.password = bcrypt.hashSync(user.password, salt);
 });

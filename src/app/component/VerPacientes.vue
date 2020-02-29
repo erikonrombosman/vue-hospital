@@ -156,25 +156,19 @@
         <td class="text">{{ props.item.fechanac }}</td>
         <td class="text">{{ props.item.alergia }}</td>
         <td class="justify-center">
-          <v-icon
-            small
-            class="mr-2"
-            @click="editItem(props.item)"
-          >
-            edit
-          </v-icon>
-          <v-icon
-            small
-            @click="deleteItem(props.item)"
-          >
-            delete
-          </v-icon>
-          <v-icon
-            small
-            @click="deleteItem(props.item)"
-          >
-            delete
-          </v-icon>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                small
+                class="mr-2"
+                @click="editItem(props.item)"
+                 v-on="on"
+              >
+                edit
+              </v-icon>
+            </template>
+            <span>Editar</span>
+          </v-tooltip>
         </td>
       </template>
     </v-data-table>
