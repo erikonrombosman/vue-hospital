@@ -27,6 +27,7 @@ passport.use(new LocalStrategy(
 ));
 router.post('/login',passport.authenticate('local'), function(req, res){
   if(req.user){
+    console.log(req.user, "user login")
     if(req.user.bool_activo){
       res.status(200).send({user: req.user})
     }else{

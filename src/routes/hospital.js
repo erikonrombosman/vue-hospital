@@ -201,11 +201,13 @@ router.get("/pacientes", (req, res)=>{
 
 router.get("/login/:userTypeId", (req, res) => {
   const type = req.params.userTypeId
-  const query = `SELECT sp.text, sp.link, sp.icon \
+  console.log(type)
+  const query = "SELECT sp.text, sp.link, sp.icon \
                   FROM user_permission up INNER JOIN system_page sp \
                   ON up.system_page_id = sp.id \
-                  WHERE up.user_type_id = ${type} ORDER BY up.menu_order ASC`
-  db.any(query)
+                  WHERE up.user_type_id = ${type} ORDER BY up.menu_order ASC";
+  console.log(query, {type})
+  db.any(query, {type})
     .then(rows => {
       if(rows.length==undefined){
         res.status(200).send([rows])

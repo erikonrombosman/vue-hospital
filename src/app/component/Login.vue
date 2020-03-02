@@ -59,9 +59,10 @@ export default {
           password: this.password
         })
         .then(res => {
+          console.log(res)
           localStorage.setItem("user", JSON.stringify(res.data.user));
           this.$store.commit("changeUser", res.data.user);
-          const userType = res.data.user.tipo_usuario;
+          const userType = res.data.user.user_type_id;
           this.$http
             .get(`pg/login/${userType}`)
             .then(success => {

@@ -56,7 +56,7 @@ const routes = [
 ]
 function isAdmin(tipo){
   //console.log(tipo)
-  if(tipo===1 || tipo ===2 || tipo===3){
+  if(tipo==="ADMIN" || tipo ==="ADMIN-ENF" || tipo==="ADMIN-MED"){
     return true
   }else{
     return false
@@ -72,7 +72,7 @@ Vue.use(VueRouter)
 router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth) {
     let user = JSON.parse(localStorage.getItem('user'))
-    let tipo = user.tipo_usuario
+    let tipo = user.user_type_id
     if (user != null) {
       if(isAdmin(tipo) && to.meta.requiresAdmin){
         next()

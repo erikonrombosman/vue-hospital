@@ -182,6 +182,23 @@ INSERT INTO user_type(user_t) VALUES ('ADMIN-MED');
 INSERT INTO user_type(user_t) VALUES ('ENF');
 INSERT INTO user_type(user_t) VALUES ('MED');
 
+create table system_page(
+	id serial,
+	text text,
+	link text, 
+	icon text,
+	primary key(id)
+);
+
+create table user_permission(
+	id serial,
+	system_page_id bigint,
+	user_type_id text,
+	primary key(id),
+	foreign key (system_page_id) references system_page(id),
+	foreign key (user_type_id) references user_type(user_t)
+)
+
 
 --INSERTS.
 INSERT INTO usuario(rut, pswd, nombres, apellidos, especialidad, user_type_id) VALUES ('11.111.111-1', '3a781cc80ceb5f3906901cafd6ddcb9e16ee08fe96ab1638d7e546b9219180377d3bcb8997da2a4b57ab36b36535ef6fe399a9f16920d46acf46f8e0d6490aa8',
